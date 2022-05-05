@@ -1,12 +1,14 @@
 type Query {
-    job: [Job!]
-    company: [Company!]
+    job(id: ID!): Job
+    company(id: ID!): Company
+    jobs: [Job!]
 }
 
 type Company {
     id: ID!
     name: String!
     description: String
+    jobs: [Job!]
 }
 
 type Job {
