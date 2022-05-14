@@ -8,7 +8,8 @@ export const resolvers = {
     },
 
     Mutation: {
-        createJob: async (_root, { input }) => Job.create(input)
+        createJob: async (_root, { input }) => Job.create(input),
+        deleteJob: async (_root, { id }) => Job.delete(id)
     },
 
     Job: {
