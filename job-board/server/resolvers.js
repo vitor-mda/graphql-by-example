@@ -23,7 +23,16 @@ export const resolvers = {
 
             return Job.delete(id);
         },
-        updateJob: async (_root, { input }) => Job.update(input)
+        updateJob: async (_root, { input }, { user }) => {
+            checkIfAuthenticated(user);
+
+            const job = await Job.findById(input.id);
+            if (job) {
+                checkIfAuthorized(job.companyId === user.companyId);
+            }
+
+            return Job.update({ ...input, companyId: user.companyId });
+        }
     },
 
     Job: {
