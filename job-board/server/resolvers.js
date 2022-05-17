@@ -9,21 +9,16 @@ export const resolvers = {
 
     Mutation: {
         createJob: async (_root, { input }, { user }) => {
-            if (!user) {
-                throw new Error('Unauthenticated');
-            }
+            checkIfAuthenticated(user);
 
             return Job.create({ ...input, companyId: user.companyId });
         },
         deleteJob: async (_root, { id }, { user }) => {
-            if (!user) {
-                throw new Error('Unauthenticated');
-            }
+            checkIfAuthenticated(user);
 
             const job = await Job.findById(id);
-            console.log('job: ', job);
-            if (job && job.companyId !== user.companyId) {
-                throw new Error('Unauthorized');
+            if (job) {
+                checkIfAuthorized(job.companyId === user.companyId);
             }
 
             return Job.delete(id);
@@ -39,3 +34,15 @@ export const resolvers = {
         jobs: async (company) => Job.findAll(job => job.companyId === company.id)
     }
 };
+
+function checkIfAuthenticated(user) {
+    if (!user) {
+        throw new Error('Unauthenticated');
+    }
+}
+
+function checkIfAuthorized(condition) {
+    if (!condition) {
+        throw new Error('Unauthorized');
+    }
+}
