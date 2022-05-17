@@ -8,7 +8,13 @@ export const resolvers = {
     },
 
     Mutation: {
-        createJob: async (_root, { input }) => Job.create(input),
+        createJob: async (_root, { input }, { user }) => {
+            if (!user) {
+                throw new Error('Unauthenticated');
+            }
+
+            return Job.create({ ...input, companyId: user.companyId });
+        },
         deleteJob: async (_root, { id }) => Job.delete(id),
         updateJob: async (_root, { input }) => Job.update(input)
     },
