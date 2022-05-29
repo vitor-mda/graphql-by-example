@@ -1,11 +1,7 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { gql } from '@apollo/client';
+import { APOLLO_CLIENT, JOB_QUERY } from './constants';
 
-const GRAPHQL_URL = 'http://localhost:9000/graphql';
-
-const client = new ApolloClient({
-    uri: GRAPHQL_URL,
-    cache: new InMemoryCache()
-});
+const client = APOLLO_CLIENT;
 
 export async function getJobs() {
     const query = gql`
@@ -28,22 +24,11 @@ export async function getJobs() {
 }
 
 export async function getJobById(id) {
-    const query = gql`
-        query JobById($id: ID!) {
-            job(id: $id) {
-                id
-                title
-                company {
-                    id
-                    name
-                }
-                description
-            }
-        }
-    `;
-
     const variables = { id };
-    const { data: { job } } = await client.query( { query, variables });
+    const { data: { job } } = await client.query({ 
+        query: JOB_QUERY,
+        variables
+    });
     return job;
 }
 
