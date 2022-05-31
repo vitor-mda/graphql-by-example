@@ -1,52 +1,38 @@
 import { gql } from '@apollo/client';
-import { APOLLO_CLIENT, JOB_QUERY } from './constants';
+import { JOB_DETAIL_FRAGMENT } from './fragments';
 
-const client = APOLLO_CLIENT;
+export const JOBS_QUERY = gql`
+    query {
+        jobs {
+            id
+            title
+            company {
+                id
+                name
+            }
+        }
+    }
+`;
 
-export async function getJobs() {
-    const query = gql`
-        query {
+export const JOB_QUERY = gql`
+    query JobQuery($id: ID!) {
+        job(id: $id) {
+            ...JobDetail
+        }
+    }
+
+    ${JOB_DETAIL_FRAGMENT}
+`;
+
+export const COMPANY_QUERY = gql`
+    query CompanyById($id: ID!) {
+        company(id: $id) {
+            name
+            description
             jobs {
                 id
                 title
-                company {
-                    id
-                    name
-                }
             }
         }
-    `;
-
-    const { data: { jobs } } = await client.query({ 
-        query,
-        fetchPolicy: 'no-cache' });
-    return jobs;
-}
-
-export async function getJobById(id) {
-    const variables = { id };
-    const { data: { job } } = await client.query({ 
-        query: JOB_QUERY,
-        variables
-    });
-    return job;
-}
-
-export async function getCompanyById(id) {
-    const query = gql`
-        query CompanyById($id: ID!) {
-            company(id: $id) {
-                name
-                description
-                jobs {
-                    id
-                    title
-                }
-            }
-        }
-    `
-
-    const variables = { id };
-    const { data: { company } } = await client.query({ query, variables });
-    return company;
-}
+    }
+`;
