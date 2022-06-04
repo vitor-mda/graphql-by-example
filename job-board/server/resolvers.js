@@ -1,46 +1,82 @@
-import { Company, Job } from './db.js';
+import { Company, Job, db, companyLoader } from './db.js';
+import { nanoid } from 'nanoid';
 
 export const resolvers = {
     Query: {
-        job: async (_root, { id }) => Job.findById(id),
-        jobs: async () => Job.findAll(),
-        company: async (_root, { id }) => Company.findById(id)
+        job: async (_root, { id }) =>
+            await db.select()
+                .from('job')
+                .where({ id })
+                .first(),
+
+        jobs: async () =>
+            await db.select()
+                .from('job'),
+
+        company: async (_root, { id }) => 
+            await db.select()
+                .from('company')
+                .where({ id })
+                .first()
     },
 
     Mutation: {
         createJob: async (_root, { input }, { user }) => {
             checkIfAuthenticated(user);
 
-            return Job.create({ ...input, companyId: user.companyId });
+            const newJob = await db.insert({
+                ...input,
+                id: nanoid(),
+                company_id: user.company_id
+            })
+                .into('job')
+                .returning('*');
+
+            return newJob[0];
         },
+
         deleteJob: async (_root, { id }, { user }) => {
             checkIfAuthenticated(user);
 
-            const job = await Job.findById(id);
-            if (job) {
-                checkIfAuthorized(job.companyId === user.companyId);
-            }
+            const job = await db.select()
+                .from('job')
+                .where({ id })
+                .first();
+            if (job) checkIfAuthorized(job.companyId === user.companyId);
+            else return;
 
-            return Job.delete(id);
+            await db.delete().from('job').where({ id });
+
+            return job;
         },
+
         updateJob: async (_root, { input }, { user }) => {
             checkIfAuthenticated(user);
 
-            const job = await Job.findById(input.id);
-            if (job) {
-                checkIfAuthorized(job.companyId === user.companyId);
-            }
+            const job = await db.select()
+                .from('job')
+                .where({ id: input.id})
+                .first();
+            if (job) checkIfAuthorized(job.companyId === user.companyId);
+            else return;
 
-            return Job.update({ ...input, companyId: user.companyId });
+            await db.update({ ...input })
+                .from('job')
+                .where({ id: input.id });
+
+            return { ...job, ...input};
         }
     },
 
     Job: {
-        company: async (job) => Company.findById(job.companyId)
+        company: async (job) => await companyLoader.load(job.company_id)
     },
 
     Company: {
-        jobs: async (company) => Job.findAll(job => job.companyId === company.id)
+        jobs: async (company) =>
+            await db.select()
+                .from('job')
+                .where({ company_id: company.id })
     }
 };
 

@@ -4,7 +4,7 @@ import express from 'express';
 import { expressjwt } from 'express-jwt';
 import { readFile } from 'fs/promises';
 import jwt from 'jsonwebtoken';
-import { User } from './db.js';
+import { User, db } from './db.js';
 import {resolvers } from './resolvers.js';
 
 const PORT = 9000;
@@ -19,7 +19,10 @@ app.use(cors(), express.json(), expressjwt({
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne((user) => user.email === email);
+  const user = await db.select('password')
+    .from('user')
+    .where({ email })
+    .first();
   if (user && user.password === password) {
     const token = jwt.sign({ sub: user.id }, JWT_SECRET);
     res.json({ token });
@@ -32,7 +35,12 @@ const typeDefs = await readFile('./schema.graphql', 'utf-8');
 
 const context = async ({ req }) => {
   if (req.auth) {
-    return { user: await User.findById(req.auth.sub) };
+    const user = await db.select()
+    .from('user')
+    .where({ id: req.auth.sub })
+    .first();
+
+    return { user };
   }
   return {};
 };
