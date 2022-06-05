@@ -5,7 +5,7 @@ import { expressjwt } from 'express-jwt';
 import { readFile } from 'fs/promises';
 import jwt from 'jsonwebtoken';
 import { db, createCompanyLoader } from './db.js';
-import {resolvers } from './resolvers.js';
+import { resolvers } from './resolvers.js';
 
 const PORT = 9000;
 const JWT_SECRET = Buffer.from('Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt', 'base64');
@@ -19,7 +19,7 @@ app.use(cors(), express.json(), expressjwt({
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = await db.select('password')
+  const user = await db.select('id', 'password')
     .from('user')
     .where({ email })
     .first();
@@ -37,11 +37,11 @@ const context = async ({ req }) => {
   const context = { companyLoader: createCompanyLoader() };
   if (req.auth) {
     const user = await db.select()
-    .from('user')
-    .where({ id: req.auth.sub })
-    .first();
+      .from('user')
+      .where({ id: req.auth.sub })
+      .first();
 
-    context.user = user;
+      context.user = user;
   }
   return context;
 };
