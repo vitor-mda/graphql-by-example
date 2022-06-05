@@ -42,7 +42,7 @@ export const resolvers = {
                 .from('job')
                 .where({ id })
                 .first();
-            if (job) checkIfAuthorized(job.companyId === user.companyId);
+            if (job) checkIfAuthorized(job.company_id === user.company_id);
             else return;
 
             await db.delete().from('job').where({ id });
@@ -57,7 +57,7 @@ export const resolvers = {
                 .from('job')
                 .where({ id: input.id})
                 .first();
-            if (job) checkIfAuthorized(job.companyId === user.companyId);
+            if (job) checkIfAuthorized(job.company_id === user.company_id);
             else return;
 
             await db.update({ ...input })
