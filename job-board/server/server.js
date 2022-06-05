@@ -4,7 +4,7 @@ import express from 'express';
 import { expressjwt } from 'express-jwt';
 import { readFile } from 'fs/promises';
 import jwt from 'jsonwebtoken';
-import { User, db, createCompanyLoader } from './db.js';
+import { db, createCompanyLoader } from './db.js';
 import {resolvers } from './resolvers.js';
 
 const PORT = 9000;

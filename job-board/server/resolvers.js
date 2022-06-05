@@ -1,4 +1,4 @@
-import { Company, Job, db } from './db.js';
+import { db } from './db.js';
 import { nanoid } from 'nanoid';
 
 export const resolvers = {

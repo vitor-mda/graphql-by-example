@@ -1,4 +1,3 @@
-import { Database } from 'fakebase';
 import DataLoader from 'dataloader';
 import knex from 'knex';
 
@@ -27,9 +26,3 @@ export const createCompanyLoader = () => new DataLoader(
         )
     }
 );
-
-const fakebase = new Database('./data');
-
-export const Company = fakebase.table('companies');
-export const Job = fakebase.table('jobs');
-export const User = fakebase.table('users');
