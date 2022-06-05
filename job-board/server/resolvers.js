@@ -1,4 +1,4 @@
-import { Company, Job, db, companyLoader } from './db.js';
+import { Company, Job, db } from './db.js';
 import { nanoid } from 'nanoid';
 
 export const resolvers = {
@@ -69,7 +69,7 @@ export const resolvers = {
     },
 
     Job: {
-        company: async (job) => await companyLoader.load(job.company_id)
+        company: async (job, _args, { companyLoader }) => await companyLoader.load(job.company_id)
     },
 
     Company: {

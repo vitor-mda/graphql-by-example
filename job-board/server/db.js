@@ -14,7 +14,7 @@ db.on('query', ({ sql, bindings }) => {
     console.log('[db][knex]', sql, bindings);
 });
 
-export const companyLoader = await new DataLoader(
+export const createCompanyLoader = () => new DataLoader(
     async (companyIds) => {
         console.log('[CompanyLoader] companyIds:', companyIds);
         const companies =

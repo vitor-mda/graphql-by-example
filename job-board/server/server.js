@@ -4,7 +4,7 @@ import express from 'express';
 import { expressjwt } from 'express-jwt';
 import { readFile } from 'fs/promises';
 import jwt from 'jsonwebtoken';
-import { User, db } from './db.js';
+import { User, db, createCompanyLoader } from './db.js';
 import {resolvers } from './resolvers.js';
 
 const PORT = 9000;
@@ -34,15 +34,16 @@ app.post('/login', async (req, res) => {
 const typeDefs = await readFile('./schema.graphql', 'utf-8');
 
 const context = async ({ req }) => {
+  const context = { companyLoader: createCompanyLoader() };
   if (req.auth) {
     const user = await db.select()
     .from('user')
     .where({ id: req.auth.sub })
     .first();
 
-    return { user };
+    context.user = user;
   }
-  return {};
+  return context;
 };
 
 const apolloServer = new ApolloServer({ typeDefs, resolvers, context });
