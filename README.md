@@ -7,8 +7,8 @@ The course introduces GraphQL and its fundamentals, along with sample server and
 ## ✨ Examples
 
 - [🌎 Hello, World!](hello-world)
-
 - [💼 Job Board](job-board)
+- [💬 Chat](chat)
 
 
 ## ✔️ Course completion
