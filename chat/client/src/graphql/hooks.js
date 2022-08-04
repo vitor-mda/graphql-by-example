@@ -33,9 +33,9 @@ export function useMessages() {
       const newMessage = subscriptionData.data.message;
       client.cache.updateQuery(
         { query: MESSAGES_QUERY },
-        ({ messages: oldMessages }) => {
-          return { messages: [...oldMessages, newMessage] }
-        }
+        ({ messages: oldMessages }) => (
+          { messages: [...oldMessages, newMessage] }
+        )
       );
     }
   })
