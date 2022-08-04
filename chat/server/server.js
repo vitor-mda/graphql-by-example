@@ -33,11 +33,20 @@ app.post('/login', async (req, res) => {
   }
 });
 
-function getContext({ req }) {
+function getHttpContext({ req }) {
   if (req.auth) {
     return { userId: req.auth.sub };
   }
   return {};
+}
+
+function getWsContext({ connectionParams }) {
+  const context = {};
+  const token = connectionParams?.accessToken;
+
+  if (token) context.userId = jwt.verify(token, JWT_SECRET);
+
+  return context;
 }
 
 const httpServer = createHttpServer(app);
@@ -45,9 +54,9 @@ const wsServer = new WebSocketServer({ server: httpServer, path: GRAPHQL_PATH })
 
 const typeDefs = await readFile('./schema.graphql', 'utf8');
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-useWsServer({ schema }, wsServer);
+useWsServer({ schema, context: getWsContext }, wsServer);
 
-const apolloServer = new ApolloServer({ schema, context: getContext });
+const apolloServer = new ApolloServer({ schema, context: getHttpContext });
 await apolloServer.start();
 apolloServer.applyMiddleware({ app, path: GRAPHQL_PATH });
 

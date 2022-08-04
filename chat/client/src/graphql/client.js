@@ -3,6 +3,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { Kind, OperationTypeNode } from 'graphql';
 import { createClient as createWsClient } from 'graphql-ws';
+import { getAccessToken } from '../auth';
 
 const GRAPHQL_HTTP_URL = 'http://localhost:9000/graphql';
 const GRAPHQL_WS_URL = 'ws://localhost:9000/graphql';
@@ -12,7 +13,10 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new GraphQLWsLink(createWsClient({
-  url: GRAPHQL_WS_URL
+  url: GRAPHQL_WS_URL,
+  connectionParams: () => ({
+    accessToken: getAccessToken()
+  })
 }));
 
 const isSubscription = ({ query }) => {
