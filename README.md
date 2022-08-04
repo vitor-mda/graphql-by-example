@@ -18,4 +18,4 @@ The course introduces GraphQL and its fundamentals, along with sample server and
 | ✅ | **25%** |
 | ✅ | **50%** |
 | ✅ | **75%** |
-| 🔳 | **100%** |
+| ✅ | **100%** |
